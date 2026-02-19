@@ -13,13 +13,13 @@
 
         <!-- Add ?createDatabaseIfNotExist=true to create database  -->
         <property name="connection.url">
-            jdbc:mysql://localhost:3308/insttuto?createDatabaseIfNotExist=true&amp;useSSL=false&amp;allowPublicKeyRetrieval=true&amp;serverTimezone=UTC
+            jdbc:mysql://localhost:3308/instituto?createDatabaseIfNotExist=true&amp;useSSL=false&amp;allowPublicKeyRetrieval=true&amp;serverTimezone=UTC
         </property>
 
 
         <!--user and pass -->
         <property name="connection.username">root</property>
-        <property name="connection.password">root</property>
+        <property name="connection.password">pulpillox7</property>
 
         <!-- extra conf -->
 
@@ -61,6 +61,7 @@
         <mapping class="MODELS.Modulo" />
         <mapping class="MODELS.Tutor" />
         <mapping class="MODELS.Actividad" />
+        <mapping class="MODELS.Realiza"/>
 
 
 <!--        <mapping class="package.class2" />-->

@@ -1,5 +1,6 @@
 import MODELS.Curso;
 import MODELS.Modulo;
+import MODELS.Tutor;
 import UTILS.HibernateUtil;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -23,8 +24,11 @@ public class Main {
 
         laSesion.beginTransaction();
 
-        Curso c1 = new Curso("dam", 2);;
-        Curso c2 = new Curso("cocina", 1);
+        Tutor t1 = new Tutor("paco", "pgalera@gmail.com");
+        Tutor t2 = new Tutor("mariano", "eldelaprueba@gmail.com");
+
+        Curso c1 = new Curso("dam", 2, t1);;
+        Curso c2 = new Curso("cocina", 1,t2);
 
         Modulo m1 = new Modulo("PMP", "produccion de masa pastelera", 120);
         Modulo m2 = new Modulo("arroces", "paellas, melosos y de mas", 180);

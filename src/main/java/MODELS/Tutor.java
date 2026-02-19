@@ -1,4 +1,5 @@
 package MODELS;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
@@ -10,6 +11,7 @@ import java.io.Serializable;
 
 @Data
 @ToString
+@AllArgsConstructor
 @NoArgsConstructor
 @Embeddable
 public class Tutor implements Serializable {
@@ -22,5 +24,8 @@ public class Tutor implements Serializable {
 
     @Column
     private String email;
+
+
+
 
 }
