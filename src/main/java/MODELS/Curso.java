@@ -1,10 +1,7 @@
 package MODELS;
 
 
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 
 import javax.naming.Name;
 import javax.persistence.*;
@@ -14,9 +11,17 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @Entity(name = "Curso")
+
+@NamedQueries({
+        @NamedQuery(name = "findCursos", query = "from Curso" ),
+        @NamedQuery(name = "Curso.cursosEntreAnios", query = "from Curso c where c.anyo between :anioInicio and :anioFin"),
+        @NamedQuery(name = "Curso.tutoresMismoSector", query = "select distinct c.tutor.nombreTutor, c.tutor.email from Curso c where c.sector = :sector")
+
+})
 public class Curso implements Serializable {
 
     @Serial
@@ -28,6 +33,9 @@ public class Curso implements Serializable {
 
     @Column
     private String nombreCurso;
+
+    @Column
+    private String sector;
 
     @Column
     private int anyo;
@@ -47,8 +55,7 @@ public class Curso implements Serializable {
 //                    column = @Column(name = "emailTutorPrincipal"))
 //    })
 //    private Tutor tutorprincipal;
-
- /////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////
 
 //    @OneToOne(cascade = CascadeType.ALL)
 //    @JoinColumn(
@@ -71,8 +78,9 @@ public class Curso implements Serializable {
 
 
     // CURSO-ALUMNO
+    @ToString.Exclude
     @OneToMany(mappedBy = "elcurso",
-            cascade = CascadeType.PERSIST,
+            cascade = CascadeType.ALL,
             fetch = FetchType.LAZY)
     private Set<Alumno> alumnos;
 
@@ -81,9 +89,9 @@ public class Curso implements Serializable {
 
     //CURSO-MODULO
 
-
-    @ManyToMany(cascade = CascadeType.PERSIST,
-        fetch = FetchType.LAZY)
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
+    @ManyToMany
     @JoinTable(name = "Pertenece",
         joinColumns = {@JoinColumn(
                 name = "idCurso",
@@ -91,23 +99,25 @@ public class Curso implements Serializable {
         inverseJoinColumns = {@JoinColumn(
                 name = "idModulo",
                 foreignKey = @ForeignKey(name = "FK_PER_MOD"))})
-
-    @ToString.Exclude
-    @EqualsAndHashCode.Exclude
     private Set<Modulo> losmodulos = new HashSet<>();
 
 
 
 
-    public Curso(String nombreCurso, int anyo, Tutor tutor) {
-        this.nombreCurso = nombreCurso;
+    public Curso(int anyo, String nombreCurso, String sector, Tutor tutor) {
         this.anyo = anyo;
+        this.nombreCurso = nombreCurso;
+        this.sector = sector;
         this.tutor = tutor;
     }
 
 
-
-
+    @Override
+    public String toString(){
+        StringBuilder builder = new StringBuilder();
+        builder.append("ID: ").append(this.idCurso).append(" || NOMBRE: ").append(this.nombreCurso).append(" || SECTOR ").append(this.sector).append(this.tutor);
+        return builder.toString();
+    }
 
 
 }

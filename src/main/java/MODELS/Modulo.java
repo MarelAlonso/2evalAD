@@ -9,10 +9,14 @@ import java.util.List;
 import java.util.Set;
 
 
-@Data
-@ToString
+@Getter
+@Setter
 @NoArgsConstructor
 @Entity
+@NamedQueries({
+        @NamedQuery(name = "Modulo.modulosCursosAnteriores", query = "select m from Curso c join c.losmodulos m where c.anyo < :anio"),
+        @NamedQuery(name = "Modulo.modulosSectorHoras", query = "select m from Curso c join c.losmodulos m where c.sector = :sector and m.horas >= 170")
+})
 public class Modulo implements Serializable {
 
     @Serial
@@ -32,9 +36,7 @@ public class Modulo implements Serializable {
     private int horas;
 
 
-    @ManyToMany(cascade = CascadeType.PERSIST,
-        fetch = FetchType.LAZY,
-        mappedBy = "losmodulos")
+    @ManyToMany(mappedBy = "losmodulos")
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
     private Set<Curso> loscursos = new HashSet<>();
@@ -47,4 +49,12 @@ public class Modulo implements Serializable {
         this.descripcion = descripcion;
         this.horas = horas;
     }
+
+    @Override
+    public String toString(){
+        StringBuilder builder = new StringBuilder();
+        builder.append("ID: ").append(this.idModulo).append(" || TITULO: ").append(this.titulo).append(" || DESCRIPCION: ").append(this.horas).append(" || HORAS: ").append(this.horas).append(" || ");
+        return builder.toString();
+    }
+
 }

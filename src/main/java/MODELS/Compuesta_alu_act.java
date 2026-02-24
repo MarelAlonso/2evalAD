@@ -17,13 +17,7 @@ public class Compuesta_alu_act implements Serializable {
 
     @Serial
     private static final long serialVersionUID = 137L;
-
-
     private Long idAlumno;
     private Long idActividad;
-
-
-
-
 
 }

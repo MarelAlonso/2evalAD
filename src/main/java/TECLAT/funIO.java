@@ -12,7 +12,28 @@ import javax.swing.*;
 import java.util.ArrayList;
 import java.util.Scanner;
 
+
+
 public class funIO {
+
+    public static String validarNum(String mensaje) {
+        while (true) {
+            String input = funIO.lligString(mensaje);
+
+            if (input.isEmpty()) {
+                return ""; // ⚡ vacío significa no modificar
+            }
+
+            try {
+                Integer.parseInt(input); // solo para validar
+                return input; // número válido
+            } catch (NumberFormatException e) {
+                System.out.println("Debes introducir un número válido o dejar vacío para no modificar.");
+            }
+        }
+    }
+
+
 
     // ================== FUNCIONS D'EIXIDA ==================
 
@@ -551,4 +572,17 @@ public class funIO {
         return Integer.parseInt(lligTextG(missatge));
     }
 
+    public static Long lligLong(String mensaje) {
+        Long valor = null;
+        while (valor == null) {
+            System.out.print(mensaje + ": ");
+            String entrada = sc.nextLine(); // siempre leemos como String
+            try {
+                valor = Long.parseLong(entrada.trim()); // convertimos a Long
+            } catch (NumberFormatException e) {
+                System.out.println("Entrada inválida. Por favor ingrese un número entero largo.");
+            }
+        }
+        return valor;
+    }
 }

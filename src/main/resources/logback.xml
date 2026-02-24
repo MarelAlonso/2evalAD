@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <!-- Appender para consola -->
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <!-- - SILENCIAR TODOS LOS LOGS DE HIBERNATE - -->
+    <!-- Paquete principal de Hibernate -->
+    <logger name="org.hibernate" level="ERROR"/>
+
+    <!-- Loggers específicos que aparecen en tu mensaje -->
+    <logger name="org.hibernate.event.internal" level="OFF"/>
+    <logger name="org.hibernate.internal.util" level="OFF"/>
+    <logger name="org.hibernate.resource.jdbc.internal" level="OFF"/>
+    <logger name="org.hibernate.resource.transaction.internal" level="OFF"/>
+
+    <!-- Logger adicionales de Hibernate que suelen dar problemas -->
+    <logger name="org.hibernate.SQL" level="OFF"/>
+    <logger name="org.hibernate.type" level="OFF"/>
+    <logger name="org.hibernate.type.descriptor.sql" level="OFF"/>
+    <logger name="org.hibernate.cache" level="OFF"/>
+    <logger name="org.hibernate.engine" level="OFF"/>
+    <logger name="org.hibernate.loader" level="OFF"/>
+    <logger name="org.hibernate.persister" level="OFF"/>
+
+    <!-- Nivel para el resto de la aplicación -->
+    <root level="INFO">
+        <appender-ref ref="CONSOLE"/>
+    </root>
+</configuration>

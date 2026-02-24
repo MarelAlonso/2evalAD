@@ -37,6 +37,8 @@
         <!-- show "reals" SQL ops. only for development-->
         <property name="show_sql">false</property>
 
+
+
         <!-- DB maintenance -->
         <property name="hbm2ddl.auto">create</property>
 

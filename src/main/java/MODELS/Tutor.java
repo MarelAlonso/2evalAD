@@ -1,18 +1,16 @@
 package MODELS;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 
 import javax.persistence.*;
 import java.io.Serial;
 import java.io.Serializable;
 
 
-@Data
-@ToString
-@AllArgsConstructor
+
+@Getter
+@Setter
 @NoArgsConstructor
+
 @Embeddable
 public class Tutor implements Serializable {
 
@@ -26,6 +24,18 @@ public class Tutor implements Serializable {
     private String email;
 
 
+    public Tutor(String email, String nombreTutor) {
+        this.nombreTutor = nombreTutor;
+        this.email = email;
 
+    }
+
+
+    @Override
+    public String toString(){
+        StringBuilder builder = new StringBuilder();
+        builder.append(" || TUTOR: ").append(this.nombreTutor).append(" || E-mail: ").append(this.email).append(" || ");
+        return builder.toString();
+    }
 
 }

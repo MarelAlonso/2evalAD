@@ -9,7 +9,9 @@ import org.checkerframework.checker.units.qual.C;
 import javax.persistence.*;
 import java.io.Serial;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 @Data
 @ToString
@@ -30,11 +32,19 @@ public class Actividad implements Serializable {
     @Column
     private String descripcion;
 
-    @Column
-    private Date fecha;// ????
 
-    @OneToMany(mappedBy = "actividad", cascade = CascadeType.PERSIST)
-    private java.util.List<Realiza> alumnos;
+    @ToString.Exclude
+    @OneToMany(mappedBy = "actividad", cascade = CascadeType.ALL)
+    private List<Realiza> alumnos;
 
+
+
+
+    @Override
+    public String toString(){
+    StringBuilder builder = new StringBuilder();
+    builder.append("ID: ").append(this.idActividad).append(" || TITULO: ").append(this.titulo).append(" || DESCRIPCIÓN: ").append(this.descripcion).append(" || ");
+    return builder.toString();
+    }
 
 }
