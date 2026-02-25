@@ -22,13 +22,12 @@ public class Main {
         while (!salir) {
 
             System.out.println("======MENU PRINCIPAL======");
-            System.out.println("1.Alumno");
+            System.out.println("1.Alumno (-r)");
             System.out.println("2.Actividad");
             System.out.println("3.Curso");
             System.out.println("4.Modulo");
-            System.out.println("5.Realiza");
-            System.out.println("6.Consultas y flitrados (2.3.3)");
-
+            System.out.println("5.Consultas y flitrados (2.3.3)");
+            System.out.println();
 
             System.out.println("9.Salir");
 
@@ -39,19 +38,16 @@ public class Main {
                 case "2", "Actividad" -> main.menuActividad();
                 case "3", "Curso" -> main.menuCurso();
                 case "4", "Modulo" -> main.menuModulo();
-                case "5", "Realiza" -> main.menuRealiza();
-                case "6", "Consultas"-> main.menuCunsultas();
+                case "5", "Consultas"-> main.menuCunsultas();
                 case "9", "salir" -> salir = true;
-
 
                 default -> System.out.println("opcion no valida");
             }
         }
-
     }
 
 /// //////////// 2.3.3 CONSULTAS //////////////
-    void  menuCunsultas(){
+    void menuCunsultas(){
 
 
         boolean salir = false;
@@ -175,14 +171,14 @@ public class Main {
             Alumno a = (Alumno) obj[0];
             Actividad act = (Actividad) obj[1];
 
-            // Si cambia el alumno, lo imprimimos una sola vez
+
             if (alumnoActual == null || !alumnoActual.equals(a)) {
                 alumnoActual = a;
                 System.out.println("\n" + a);
                 System.out.println("\tAtividades pendientes:");
             }
 
-            // Imprimir actividad debajo
+
             System.out.println("\t- " + act.getTitulo());
         }
 
@@ -209,7 +205,7 @@ public class Main {
                     .add(r);
         }
 
-        // Mostrar la lista
+
         System.out.println("\n=== Actividades de alumnos del curso ID " + idCurso + " ===");
         for (Map.Entry<Alumno, List<Realiza>> entry : actividadesPorAlumno.entrySet()) {
             Alumno alumno = entry.getKey();
@@ -299,8 +295,6 @@ public class Main {
         sesion.getTransaction().commit();
     }
 
-
-
     /// ////// ALUMNO///////////////////
     void menuAlumno() {
 
@@ -310,7 +304,8 @@ public class Main {
             System.out.println("======MENU ALUMNO======");
             System.out.print("1.Insertar || ");
             System.out.println("1-r.Insertar -r");
-            System.out.println("2 Modificar");
+            System.out.print("2 Modificar || ");
+            System.out.println("2-r Modificar");
             System.out.println("3 Eliminar");
             System.out.print("4.Buscar || ");
             System.out.println("4-r.Buscar-r");
@@ -324,6 +319,7 @@ public class Main {
                 case "1", "insertar"-> insertaralu();
                 case "1-r", "insertar -r"-> insertarAluRecursivo();
                 case "2", "modificar"-> updatealu();
+                case "2-r", "modificar -r" -> updatealumRecursivo();
                 case "3", "eliminar"-> eliminaralu();
                 case "4",  "buscar"-> buscaralu();
                 case "4-r", "buscar -r"-> buscaraluRecursivo();
@@ -466,6 +462,92 @@ public class Main {
         sesion.getTransaction().commit();
         sesion.close();
     }
+    void updatealumRecursivo(){
+        SessionFactory sf = HibernateUtil.getSessionFactory();
+        Session sesion = sf.getCurrentSession();
+        sesion.beginTransaction();
+
+        Long id = (long) funIO.lligInt("introduce el id de el alumno de la lista que quieres modificar (pulsa intro per a no modificar)");
+
+
+        Alumno a = sesion.get(Alumno.class, id);
+        if (a != null) {
+            String nom = funIO.lligString("Nombre: ");
+            String apellido = funIO.lligString("Apellido: ");
+            String email = funIO.lligString("Email: ");
+            String idc = funIO.lligString("ID Curso: ");
+            if (!nom.isEmpty()) a.setNombre(nom);
+            if (!apellido.isEmpty()) a.setApellido(apellido);
+            if (!email.isEmpty()) a.setEmail(email);
+            if (!idc.isEmpty()) {
+                Long nuevoIdCurso = Long.valueOf(idc);
+                Curso nuevoCurso = sesion.get(Curso.class, nuevoIdCurso);
+
+                if (nuevoCurso != null) {
+                    a.setElcurso(nuevoCurso);
+                } else {
+                    String siono = funIO.lligString("No existe el curso con id: " + nuevoIdCurso + " deseas crearlo? (si = s)");
+                    if (siono.equalsIgnoreCase("s")){
+                        if (siono.equalsIgnoreCase("s")) {
+
+
+                            sesion.getTransaction().commit();
+                            sesion.close();
+
+
+                            insertarcur();
+
+
+                            sesion = sf.getCurrentSession();
+                            sesion.beginTransaction();
+
+
+                            a = sesion.get(Alumno.class, id);
+
+
+                            Curso cursoCreado = sesion
+                                    .createQuery("FROM Curso ORDER BY idCurso DESC", Curso.class)
+                                    .setMaxResults(1)
+                                    .uniqueResult();
+
+                            if (cursoCreado != null) {
+                                a.setElcurso(cursoCreado);
+                            }
+                        }
+
+
+                        Curso cursoCreado = sesion
+                                .createQuery("FROM Curso ORDER BY idCurso DESC", Curso.class)
+                                .setMaxResults(1)
+                                .uniqueResult();
+
+                        if (cursoCreado != null) {
+                            a.setElcurso(cursoCreado);
+
+                        }
+                        System.out.println("Alumno modificado: " + a +" "+ a.getElcurso().getNombreCurso() );
+                        System.out.println("Nuevo curso: " + a.getElcurso().toString());
+                    }else {
+
+                        System.out.println(" No se Ha insertado nuevo curso al alumno");
+                    }
+
+                }
+            }
+            sesion.persist(a);
+
+        }else {
+            System.out.println("No existe el alumno con el id: " + id);
+        }
+
+        sesion.getTransaction().commit();
+        sesion.close();
+
+
+
+
+
+    }
     void eliminaralu(){
         SessionFactory sf = HibernateUtil.getSessionFactory();
         Session sesion = sf.getCurrentSession();
@@ -491,9 +573,14 @@ public class Main {
         Long id = (long) funIO.lligInt("introduce el id de el Alumno que Buscar");
         Alumno a = sesion.get(Alumno.class, id);
         if(a != null){
-            System.out.println("Actividad encontrada:" + a.toString());
+            System.out.println("Alumno encontrada:" + a.toString());
+            if(a.getElcurso()!=null){
+                System.out.println(a.getElcurso().getNombreCurso());
+            }else{
+                System.out.println("Curso no asignado");
+            }
         }else {
-            System.out.println("No existe el actividad con el id: " + id);
+            System.out.println("No existe el alumno con el id: " + id);
         }
         sesion.getTransaction().commit();
         sesion.close();
@@ -507,6 +594,11 @@ public class Main {
         if(a != null){
             System.out.println();
             System.out.println("Alumno encontrada:" + a.toString());
+            if(a.getElcurso()!=null){
+                System.out.println(a.getElcurso().getNombreCurso());
+            }else{
+                System.out.println("Curso no asignado");
+            }
 
             Query<Object[]> q = sesion.createNamedQuery("Alumno.buscar-rec", Object[].class);
             q.setParameter("idAlumno", id);
@@ -536,7 +628,25 @@ public class Main {
 
         Query<Alumno> q=sesion.createQuery("from Alumno");
         List<Alumno> alumnos =  q.getResultList();
+
+        int cont = -1;
+        boolean si = false;
+        String pagin = funIO.lligString("¿Quieres paginar los resultados de 10 en 10? (S) = si");
+        if( pagin.equalsIgnoreCase("s")) {
+            si = true;
+        }
+
         for (Alumno alumno : alumnos) {
+            if (si){
+                cont ++;
+                if(cont == 10){
+                    cont = 0;
+                    String continuar = funIO.lligString("Pulsa intro para continuar");
+                }
+            }
+
+
+
             System.out.print(alumno);
             if(alumno.getElcurso()!=null){
                 System.out.println(alumno.getElcurso().getNombreCurso());
@@ -556,8 +666,22 @@ public class Main {
 
         Query<Alumno> q=sesion.createQuery("from Alumno");
         List<Alumno> alumnos =  q.getResultList();
-        for (Alumno alumno : alumnos) {
 
+        int cont = -1;
+        boolean si = false;
+
+        String pagin = funIO.lligString("¿Quieres paginar los resultados de 10 en 10? (S) = si");
+        if( pagin.equalsIgnoreCase("s")){
+            si = true;
+        }
+        for (Alumno alumno : alumnos) {
+            if (si){
+                cont ++;
+                if(cont == 10){
+                    cont = 0;
+                    String continuar = funIO.lligString("Pulsa intro para continuar");
+                }
+            }
             System.out.println();
             System.out.print("\tAlumno: " + alumno);
 
@@ -572,6 +696,8 @@ public class Main {
             List<Object[]> acts = q2.getResultList();
 
             System.out.println("\t\t=== Actividades para Alumn@ " + alumno.getNombre() + " " + alumno.getApellido() + " ===");
+
+
             for(Object[] fila : acts){
                 Long idAct = (Long) fila[0];
                 String titulo = (String) fila[1];
@@ -582,6 +708,7 @@ public class Main {
                 System.out.println("\t\tId: " + idAct + " || Titulo: " + titulo + " || Descripcion: " + descripcion + " || Entregado " + entregado + " || Nota: " + nota);
             }
         }
+
         sesion.getTransaction().commit();
         sesion.close();
     }
@@ -938,19 +1065,20 @@ public class Main {
         sesion.beginTransaction();
 
         Long id = (long) funIO.lligInt("introduce el id de Modulo que quieres modificar (pulsa intro per a no modificar)");
-        String tit = funIO.lligString("Titulo: ");
-        String desc = funIO.lligString("Descripcion: ");
-        String horas = funIO.validarNum("Horas: ");
+
 
         Modulo m = sesion.get(Modulo.class, id);
         if (m != null) {
+            String tit = funIO.lligString("Titulo: ");
+            String desc = funIO.lligString("Descripcion: ");
+            String horas = funIO.validarNum("Horas: ");
+
             if (!tit.isEmpty()) m.setTitulo(tit);
             if (!desc.isEmpty()) m.setDescripcion(desc);
             if (!horas.isEmpty()) m.setHoras(Integer.parseInt(horas));
 
-
             sesion.persist(m);
-            System.out.println("Modulo modificado" + m);
+            System.out.println("Modulo modificado:\n\t" + m);
         }else {
             System.out.println("No existe el Modulo con el id: " + id);
         }
@@ -995,159 +1123,14 @@ public class Main {
         Session sesion = sf.getCurrentSession();
         sesion.beginTransaction();
 
-        Query<Alumno> q=sesion.createQuery("from Alumno");
-        List<Alumno> alumnos =  q.getResultList();
-        for (Alumno alumno : alumnos) {
-            System.out.print(alumno);
-            if(alumno.getElcurso()!=null){
-                System.out.println(alumno.getElcurso().getNombreCurso());
-            }else{
-                System.out.println("Curso no asignado");
-            }
+        Query<Modulo> q=sesion.createQuery("from Modulo");
+        List<Modulo> mod=  q.getResultList();
+        for (Modulo m : mod) {
+            System.out.println(m);
+
         }
         sesion.getTransaction().commit();
         sesion.close();
     }
-
-
-    /// ////// REALIZA///////////////////
-    void menuRealiza() {
-
-        boolean salir = false;
-        while (!salir) {
-            System.out.println("======MENU REALIZA======");
-            System.out.println("1.Insertar");
-            System.out.println("2 Modificar");
-            System.out.println("3 Eliminar");
-            System.out.println("4 Buscar");
-            System.out.println("5 Mostrar todo");
-
-
-            System.out.println("9.Salir");
-            String opcio = funIO.lligString("Opcion: ");
-
-            switch (opcio) {
-                case "1", "insertar"-> insertarRealiza();
-                case "2", "modificar"-> updateRealiza();
-                case "3", "eliminar"-> eliminarRealiza();
-                case "4", "buscar"-> buscarRealiza();
-                case "5", "mostrar"-> listarRealiza();
-                case "9", "salir"-> salir = true;
-
-
-                default -> System.out.println("opcion no valida");
-
-
-            }
-        }
-
-    }
-    void insertarRealiza(){
-        SessionFactory sf = HibernateUtil.getSessionFactory();
-        Session sesion = sf.getCurrentSession();
-
-        System.out.println("===Insertar Alumno===");
-        String nom = funIO.lligString("Nombre: ");
-        String apellido = funIO.lligString("Apellido: ");
-        String email = funIO.lligString("Email: ");
-
-        Alumno alumno = new Alumno();
-        alumno.setNombre(nom);
-        alumno.setApellido(apellido);
-        alumno.setEmail(email);
-
-        System.out.println("se ha insertado el Alumno: " + nom + " " + apellido);
-
-
-        sesion.beginTransaction();
-        sesion.persist(alumno);
-        sesion.getTransaction().commit();
-        sesion.close();
-
-
-    }
-    void updateRealiza(){
-        SessionFactory sf = HibernateUtil.getSessionFactory();
-        Session sesion = sf.getCurrentSession();
-        sesion.beginTransaction();
-
-        Long id = (long) funIO.lligInt("introduce el id de el alumno de la lista que quieres modificar (pulsa intro per a no modificar)");
-        String nom = funIO.lligString("Nombre: ");
-        String apellido = funIO.lligString("Apellido: ");
-        String email = funIO.lligString("Email: ");
-
-        Alumno a = sesion.get(Alumno.class, id);
-        if (a != null) {
-            if (!nom.isEmpty()) a.setNombre(nom);
-            if (!apellido.isEmpty()) a.setApellido(apellido);
-            if (!email.isEmpty()) a.setEmail(email);
-            sesion.persist(a);
-            System.out.println("Alumno modificado" + a.toString());
-        }else {
-            System.out.println("No existe el alumno con el id: " + id);
-        }
-
-        sesion.getTransaction().commit();
-        sesion.close();
-    }
-    void eliminarRealiza(){
-        SessionFactory sf = HibernateUtil.getSessionFactory();
-        Session sesion = sf.getCurrentSession();
-        sesion.beginTransaction();
-
-        Long id = (long) funIO.lligInt("introduce el id de el alumno de la lista que quieres eliminar");
-        Alumno a = sesion.get(Alumno.class, id);
-        if (a != null) {
-            sesion.delete(a);
-            System.out.println("Alumno eliminado" + a.toString());
-        }else{
-            System.out.println("No existe el alumno con el id: " + id);
-        }
-        sesion.getTransaction().commit();
-        sesion.close();
-
-
-    }
-    void buscarRealiza() {
-        SessionFactory sf = HibernateUtil.getSessionFactory();
-        Session sesion = sf.getCurrentSession();
-        sesion.beginTransaction();
-        Long id = (long) funIO.lligInt("introduce el id de el Alumno que Buscar");
-        Alumno a = sesion.get(Alumno.class, id);
-        if(a != null){
-            System.out.println("Actividad encontrada:" + a.toString());
-        }else {
-            System.out.println("No existe el actividad con el id: " + id);
-        }
-        sesion.getTransaction().commit();
-        sesion.close();
-    }
-    void listarRealiza(){
-        SessionFactory sf = HibernateUtil.getSessionFactory();
-        Session sesion = sf.getCurrentSession();
-        sesion.beginTransaction();
-
-        Query<Alumno> q=sesion.createQuery("from Alumno");
-        List<Alumno> alumnos =  q.getResultList();
-        for (Alumno alumno : alumnos) {
-            System.out.print(alumno);
-            if(alumno.getElcurso()!=null){
-                System.out.println(alumno.getElcurso().getNombreCurso());
-            }else{
-                System.out.println("Curso no asignado");
-            }
-        }
-        sesion.getTransaction().commit();
-        sesion.close();
-    }
-
-
-
-    /// ////// ALUMNO///////////////////
-
-
-
-
-
-
+    
 }

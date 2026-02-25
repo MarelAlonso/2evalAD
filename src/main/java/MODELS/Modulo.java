@@ -36,7 +36,7 @@ public class Modulo implements Serializable {
     private int horas;
 
 
-    @ManyToMany(mappedBy = "losmodulos")
+    @ManyToMany(mappedBy = "losmodulos", cascade=CascadeType.ALL)
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
     private Set<Curso> loscursos = new HashSet<>();
@@ -53,7 +53,7 @@ public class Modulo implements Serializable {
     @Override
     public String toString(){
         StringBuilder builder = new StringBuilder();
-        builder.append("ID: ").append(this.idModulo).append(" || TITULO: ").append(this.titulo).append(" || DESCRIPCION: ").append(this.horas).append(" || HORAS: ").append(this.horas).append(" || ");
+        builder.append("ID: ").append(this.idModulo).append(" || TITULO: ").append(this.titulo).append(" || DESCRIPCION: ").append(this.descripcion).append(" || HORAS: ").append(this.horas).append(" || ");
         return builder.toString();
     }
 
